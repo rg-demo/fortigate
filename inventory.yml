@@ -1,0 +1,18 @@
+---
+all:
+  children:
+    fortigates:
+      hosts:
+        jp-fgt3:
+          ansible_host: "{{ jp_fgt3_ip }}"
+          fg_token: "{{ jp_access_token }}"
+        eu-fgt4:
+          ansible_host: "{{ eu_fgt4_ip }}"
+          fg_token: "{{ eu_access_token }}"          
+      vars:
+        ansible_network_os: fortinet.fortios.fortios
+        ansible_connection: httpapi
+        ansible_httpapi_use_ssl: no
+        ansible_httpapi_validate_certs: no
+        connection: httpapi
+

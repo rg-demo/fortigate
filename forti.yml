@@ -1,0 +1,63 @@
+---
+- name: Automation Fortigate Firewall
+  hosts: fortigates
+  gather_facts: no
+  vars:
+    fg_vdom: root
+  
+  tasks:
+    - name: "Collect facts from Fortigate"
+      fortinet.fortios.fortios_configuration_fact:
+        access_token: "{{ fg_token }}"
+        vdom: "{{ fg_vdom }}"
+        selectors:
+          - selector: system_dns
+      register:
+        _r_selector
+
+    - name: "Output dns information"
+      with_items:
+        - "{{ _r_selector['meta'] }}"
+      loop_control:
+        label: "{{ inventory_hostname }}"
+      ansible.builtin.debug:
+        msg:  >
+          Exisiting secondary dns: {{ item['results']['secondary'] }}
+      
+    - name: "Re-configure secondary DNS on Fortigate"
+      fortinet.fortios.fortios_system_dns:
+        access_token: "{{ fg_token }}"
+        vdom: "{{ fg_vdom }}"
+        system_dns:
+            secondary: >-
+              {%- if 'jp' in inventory_hostname -%}
+                1.2.3.4
+              {%- elif 'us' in inventory_hostname -%}
+                5.6.7.8
+              {%- else -%}
+                9.9.9.9
+              {%- endif -%}
+      register:
+        _r_dns
+
+    - name: Make necessary dns changes if applicable
+      when: _r_dns['changed'] == true
+      block:
+        - name: "Re-collect facts from Fortigate"
+          fortinet.fortios.fortios_configuration_fact:
+            access_token: "{{ fg_token }}"
+            vdom: "{{ fg_vdom }}"
+            selectors:
+              - selector: system_dns
+          register:
+            _r_dns_change
+
+        - name: "Output dns information after change"
+          with_items:
+            - "{{ _r_dns_change['meta'] }}"
+          loop_control:
+            label: "{{ inventory_hostname }}"
+          ansible.builtin.debug:
+            msg:  >
+              New secondary dns: {{ item['results']['secondary'] }}
+...
