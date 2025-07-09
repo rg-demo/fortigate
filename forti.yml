@@ -23,20 +23,30 @@
       loop_control:
         label: "{{ inventory_hostname }}"
       ansible.builtin.debug:
-        msg: "The current secondary dns configured for {{ inventory_hostname }} is: {{ item['results']['secondary'] }}"
+        msg:
+          - "The current primary dns configured for firewall {{ inventory_hostname }} is: {{ item['results']['primary'] }}"
+          - "The current secondary dns configured for firewall {{ inventory_hostname }} is: {{ item['results']['secondary'] }}"
       
     - name: "Re-configure secondary DNS on Fortigate"
       fortinet.fortios.fortios_system_dns:
         access_token: "{{ fg_token }}"
         vdom: "{{ fg_vdom }}"
         system_dns:
-            secondary: >-
+            primary: >- 
               {%- if 'jp' in inventory_hostname -%}
                 1.2.3.4
               {%- elif 'us' in inventory_hostname -%}
                 5.6.7.8
               {%- else -%}
                 9.9.9.9
+              {%- endif -%}
+            secondary: >-
+              {%- if 'jp' in inventory_hostname -%}
+                10.11.12.13 
+              {%- elif 'us' in inventory_hostname -%}
+                14.15.16.17
+              {%- else -%}
+                20.20.20.20
               {%- endif -%}
       register:
         _r_dns
@@ -59,5 +69,7 @@
           loop_control:
             label: "{{ inventory_hostname }}"
           ansible.builtin.debug:
-            msg: "The new secondary dns configured for {{ inventory_hostname }} is: {{ item['results']['secondary'] }}"
+            msg:
+              - "The new primary dns configured for firewall {{ inventory_hostname }} is: {{ item['results']['primary'] }}"
+              - "The new secondary dns configured for firewall {{ inventory_hostname }} is: {{ item['results']['secondary'] }}"
 ...
