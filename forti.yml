@@ -23,8 +23,7 @@
       loop_control:
         label: "{{ inventory_hostname }}"
       ansible.builtin.debug:
-        msg:  >
-          Exisiting secondary dns: {{ item['results']['secondary'] }}
+        msg: "The current secondary dns configured for {{ inventory_hostname }} is: {{ item['results']['secondary'] }}"
       
     - name: "Re-configure secondary DNS on Fortigate"
       fortinet.fortios.fortios_system_dns:
@@ -60,6 +59,5 @@
           loop_control:
             label: "{{ inventory_hostname }}"
           ansible.builtin.debug:
-            msg:  >
-              New secondary dns: {{ item['results']['secondary'] }}
+            msg: "The new secondary dns configured for {{ inventory_hostname }} is: {{ item['results']['secondary'] }}"
 ...
