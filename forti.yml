@@ -2,6 +2,8 @@
 - name: Automation Fortigate Firewall
   hosts: fortigates
   gather_facts: no
+  collections:
+    - fortinet.fortios
   vars:
     fg_vdom: root
   
