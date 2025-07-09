@@ -1,0 +1,86 @@
+---
+- name: Automation Fortigate Firewall
+  hosts: fortigates
+  gather_facts: no
+  collections:
+    - fortinet.fortios
+  
+  tasks:    
+    - name: "Collect facts from Fortigate"
+      fortinet.fortios.fortios_configuration_fact:
+        access_token: "{{ fg_token }}"
+        vdom: "{{ fg_vdom }}"
+        selectors:
+          - selector: system_dns
+      register:
+        _r_selector
+
+    - name: "Output dns information"
+      ansible.builtin.debug:
+        var: _r_selector
+        verbosity: 2
+
+    - name: "Print the default DNS servers of each region"
+      ansible.builtin.debug:
+        msg:
+          - "{% if 'jp' in inventory_hostname %}Default primary dns for Japan: {{ jp_pri_dns }}{% elif 'eu' in inventory_hostname %}Default primary dns for Europe: {{ eu_pri_dns }}{% endif %}"
+          - "{% if 'jp' in inventory_hostname %}Default secondary dns for Japan: {{ jp_sec_dns }}{% elif 'eu' in inventory_hostname %}Default secondary dns for Europe: {{ eu_sec_dns }}{% endif %}"
+
+    - name: "Display current dns configuration"
+      with_items:
+        - "{{ _r_selector['meta'] }}"
+      loop_control:
+        label: "{{ inventory_hostname }}"
+      ansible.builtin.debug:
+        msg:
+          - "{% if item['results']['primary'] == '0.0.0.0' %}No primary dns is setup on firewall {{ inventory_hostname }}{% else %}The current primary dns configured for firewall {{ inventory_hostname }} is: {{ item['results']['primary'] }}{% endif %}"
+          - "{% if item['results']['secondary'] == '0.0.0.0' %}No secondary dns is setup on firewall {{ inventory_hostname }}{% else %}The current secondary dns configured for firewall {{ inventory_hostname }} is: {{ item['results']['secondary'] }}{% endif %}"
+      
+    - name: "Make necessary dns changes if applicable"
+      fortinet.fortios.fortios_system_dns:
+        access_token: "{{ fg_token }}"
+        vdom: "{{ fg_vdom }}"
+        system_dns:
+            primary: >- 
+              {%- if 'jp' in inventory_hostname -%}
+                {{ jp_pri_dns }}
+              {%- elif 'eu' in inventory_hostname -%}
+                {{ eu_pri_dns }}
+              {%- else -%}
+                {{ all_pri_dns }}
+              {%- endif -%}
+            secondary: >-
+              {%- if 'jp' in inventory_hostname -%}
+                {{ jp_sec_dns }}
+              {%- elif 'eu' in inventory_hostname -%}
+                {{ eu_sec_dns }}
+              {%- else -%}
+                {{ __all_sec_dns }} 
+              {%- endif -%}
+      register:
+        _r_dns
+
+    - name: "Check if dns configuration has changed"
+      when: _r_dns['changed'] == true
+      block:
+        - name: "Re-collect facts from Fortigate if applicable"
+          fortinet.fortios.fortios_configuration_fact:
+            access_token: "{{ fg_token }}"
+            vdom: "{{ fg_vdom }}"
+            selectors:
+              - selector: system_dns
+          register:
+            _r_dns_change
+
+        - name: "Display new dns configuration"
+          with_items:
+            - "{{ _r_dns_change['meta'] }}"
+          loop_control:
+            label: "{{ inventory_hostname }}"
+          ansible.builtin.debug:
+            msg:
+              - "The new primary dns configured for firewall {{ inventory_hostname }} is: {{ item['results']['primary'] }}"
+              - "The new secondary dns configured for firewall {{ inventory_hostname }} is: {{ item['results']['secondary'] }}"
+...
+
+    
