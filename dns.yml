@@ -63,7 +63,7 @@
     - name: "Check if dns configuration has changed"
       when: _r_dns['changed'] == true
       block:
-        - name: "Re-collect facts from Fortigate if applicable"
+        - name: "Re-collect facts from Fortigate"
           fortinet.fortios.fortios_configuration_fact:
             access_token: "{{ fg_token }}"
             vdom: "{{ fg_vdom }}"
@@ -79,8 +79,8 @@
             label: "{{ inventory_hostname }}"
           ansible.builtin.debug:
             msg:
-              - "The new primary dns configured for firewall {{ inventory_hostname }} is: {{ item['results']['primary'] }}"
-              - "The new secondary dns configured for firewall {{ inventory_hostname }} is: {{ item['results']['secondary'] }}"
+              - "The correct primary dns has been configured for firewall {{ inventory_hostname }} is: {{ item['results']['primary'] }}"
+              - "The correct secondary dns has been configured for firewall {{ inventory_hostname }} is: {{ item['results']['secondary'] }}"
 ...
 
     
