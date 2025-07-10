@@ -17,11 +17,6 @@
       tags: 
         - check_dns
 
-    - name: "Output dns information"
-      ansible.builtin.debug:
-        var: _r_selector
-        verbosity: 2
-
     - name: "Print the default DNS servers of each region"
       ansible.builtin.debug:
         msg:
