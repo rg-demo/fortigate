@@ -25,6 +25,7 @@
         msg:
           - "{% if 'jp' in inventory_hostname %}Default primary dns for Japan: {{ jp_pri_dns }}{% elif 'eu' in inventory_hostname %}Default primary dns for Europe: {{ eu_pri_dns }}{% endif %}"
           - "{% if 'jp' in inventory_hostname %}Default secondary dns for Japan: {{ jp_sec_dns }}{% elif 'eu' in inventory_hostname %}Default secondary dns for Europe: {{ eu_sec_dns }}{% endif %}"
+        verbosity: 2
 
     - name: "Display current dns configuration"
       with_items:
@@ -43,19 +44,19 @@
         system_dns:
             primary: >- 
               {%- if 'jp' in inventory_hostname -%}
-                {{ jp_pri_dns }}
+                {{ set_jp_pri_dns }}
               {%- elif 'eu' in inventory_hostname -%}
-                {{ eu_pri_dns }}
+                {{ set_eu_pri_dns }}
               {%- else -%}
-                {{ all_pri_dns }}
+                {{ set_all_pri_dns }}
               {%- endif -%}
             secondary: >-
               {%- if 'jp' in inventory_hostname -%}
-                {{ jp_sec_dns }}
+                {{ set_jp_sec_dns }}
               {%- elif 'eu' in inventory_hostname -%}
-                {{ eu_sec_dns }}
+                {{ set_eu_sec_dns }}
               {%- else -%}
-                {{ all_sec_dns }} 
+                {{ set_all_sec_dns }} 
               {%- endif -%}
       register:
         _r_dns

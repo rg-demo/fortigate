@@ -10,3 +10,15 @@ eu_sec_dns: 15.16.17.18
 # DNS variables for all regions
 all_pri_dns: 99.99.99.99
 all_sec_dns: 100.100.100.100
+
+# reset Japan DNS variables
+set_jp_pri_dns: 31.31.31.31
+set_jp_sec_dns: 32.32.32.32
+
+# reset Europe DNS variables
+set_eu_pri_dns: 51.51.51.51
+set_eu_sec_dns: 52.52.52.52
+
+# reset all DNS variables
+set_all_pri_dns: 71.71.71.71
+set_all_sec_dns: 72.72.72.72
