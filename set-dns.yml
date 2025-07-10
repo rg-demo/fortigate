@@ -73,7 +73,7 @@
           register:
             _r_dns_change
 
-        - name: "R dns configuration"
+        - name: "Resetdns configuration"
           with_items:
             - "{{ _r_dns_change['meta'] }}"
           loop_control:
