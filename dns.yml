@@ -14,7 +14,8 @@
           - selector: system_dns
       register:
         _r_selector
-      tags: check_dns
+      tags: 
+        - check_dns
 
     - name: "Output dns information"
       ansible.builtin.debug:
@@ -26,7 +27,8 @@
         msg:
           - "{% if 'jp' in inventory_hostname %}Default primary dns for Japan: {{ jp_pri_dns }}{% elif 'eu' in inventory_hostname %}Default primary dns for Europe: {{ eu_pri_dns }}{% endif %}"
           - "{% if 'jp' in inventory_hostname %}Default secondary dns for Japan: {{ jp_sec_dns }}{% elif 'eu' in inventory_hostname %}Default secondary dns for Europe: {{ eu_sec_dns }}{% endif %}"
-      tags: check_dns
+      tags: 
+        - check_dns
 
     - name: "Display current dns configuration"
       with_items:
@@ -37,7 +39,8 @@
         msg:
           - "{% if item['results']['primary'] == '0.0.0.0' %}No primary dns is setup on firewall {{ inventory_hostname }}{% else %}The current primary dns configured for firewall {{ inventory_hostname }} is: {{ item['results']['primary'] }}{% endif %}"
           - "{% if item['results']['secondary'] == '0.0.0.0' %}No secondary dns is setup on firewall {{ inventory_hostname }}{% else %}The current secondary dns configured for firewall {{ inventory_hostname }} is: {{ item['results']['secondary'] }}{% endif %}"
-      tags: check_dns
+      tags: 
+        - check_dns
 
     - name: "Make necessary dns changes if applicable"
       fortinet.fortios.fortios_system_dns:
@@ -84,6 +87,33 @@
             msg:
               - "The correct primary dns has been configured for firewall {{ inventory_hostname }} is: {{ item['results']['primary'] }}"
               - "The correct secondary dns has been configured for firewall {{ inventory_hostname }} is: {{ item['results']['secondary'] }}"
+
+    - name: "Break DNS configuration for testing"
+      fortinet.fortios.fortios_system_dns:
+        access_token: "{{ fg_token }}"
+        vdom: "{{ fg_vdom }}"
+        system_dns:
+            primary: >- 
+              {%- if 'jp' in inventory_hostname -%}
+                {{ set_jp_pri_dns }}
+              {%- elif 'eu' in inventory_hostname -%}
+                {{ set_eu_pri_dns }}
+              {%- else -%}
+                {{ set_all_pri_dns }}
+              {%- endif -%}
+            secondary: >-
+              {%- if 'jp' in inventory_hostname -%}
+                {{ set_jp_sec_dns }}
+              {%- elif 'eu' in inventory_hostname -%}
+                {{ set_eu_sec_dns }}
+              {%- else -%}
+                {{ set_all_sec_dns }} 
+              {%- endif -%}
+      register:
+        _r_dns_reset
+      tags:
+        - never
+        - break_dns
 ...
 
     
