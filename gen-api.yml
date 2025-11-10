@@ -8,6 +8,23 @@
     - vault.yml
 
   tasks:
+    - name: Create Access Profile for Ansible Automation
+      fortinet.fortios.fortios_system_accprofile:
+      vdom: "{{ fg_vdom }}"
+      state: present
+      system_accprofile:
+        name: ansible_automation_accprofile
+        admintimeout: 480
+        authgrp: read-write
+        ftviewgrp: read-write
+        fwgrp: read-write
+        loggrp: read-write
+        netgrp: read-write
+        secfabgrp: read-write
+        sysgrp: read-write
+        utmgrp: read-write
+        vpngrp: read-write
+
     - name: Create An API User if not present
       fortinet.fortios.fortios_system_api_user:
         vdom: "{{ fg_vdom }}"
