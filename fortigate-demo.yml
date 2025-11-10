@@ -66,6 +66,7 @@
       fortinet.fortios.fortios_configuration_fact:
         access_token: "{{ __fg_token }}"
         vdom: "{{ fg_vdom }}"
+        enable_log: true
         selectors:
           - selector: system_dns
       register:
@@ -97,6 +98,7 @@
       fortinet.fortios.fortios_system_dns:
         access_token: "{{ __fg_token }}"
         vdom: "{{ fg_vdom }}"
+        enable_log: true
         system_dns:
             primary: >- 
               {%- if 'jp' in inventory_hostname -%}
@@ -124,6 +126,7 @@
           fortinet.fortios.fortios_configuration_fact:
             access_token: "{{ __fg_token }}"
             vdom: "{{ fg_vdom }}"
+            enable_log: true
             selectors:
               - selector: system_dns
           register:
@@ -143,6 +146,7 @@
       fortinet.fortios.fortios_system_dns:
         access_token: "{{ __fg_token }}"
         vdom: "{{ fg_vdom }}"
+        enable_log: true
         system_dns:
             primary: >- 
               {%- if 'jp' in inventory_hostname -%}
