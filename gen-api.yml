@@ -1,0 +1,66 @@
+---
+- name: Fortigate automation
+  hosts: fortigates
+  gather_facts: no
+  collections:
+    - fortinet.fortios
+  vars:
+
+  tasks:
+    - name: Create An API User if not present
+      fortinet.fortios.fortios_system_api_user:
+        vdom: "{{ fg_vdom }}"
+        state: 'present'
+        system_api_user:
+            name: 'fortigateAPIUser'
+            accprofile: 'ansible_automation' # This is predefined privilege profile.
+            vdom:
+                - name: "{{ fg_vdom }}"
+            trusthost:
+                - id: '1'
+
+    - name: Generate The API token
+      fortinet.fortios.fortios_monitor:
+        vdom: 'root'
+        selector: 'generate-key.system.api-user'
+        params:
+            api-user: 'fortigateAPIUser'
+      register: tokeninfo
+
+    - name: Debug tokeninfo var
+      ansible.builtin.debug:
+        var: tokeninfo['meta']['results']['access_token']
+
+    - name: SetFact token
+      with_items:
+        - "{{ tokeninfo['meta'] }}"
+      loop_control:
+        label: "{{ inventory_hostname }}"
+      ansible.builtin.set_fact:
+        __fg_token: "{{ item['results']['access_token'] }}"
+
+    - name: Debug fact
+      loop:
+        - "{{ __fg_token }}"
+      ansible.builtin.debug:
+        msg:
+          - "API token for firewall {{ inventory_hostname }}: {{ __fg_token }}"
+
+    - name: "Collect facts from Fortigate"
+      fortinet.fortios.fortios_configuration_fact:
+        access_token: "{{ __fg_token }}"
+        vdom: "{{ fg_vdom }}"
+        selectors:
+          - selector: system_dns
+      register:
+        _r_selector
+
+    - name: Debug dns
+      with_items:
+        - "{{ _r_selector['meta'] }}"
+      loop_control:
+        label: "{{ inventory_hostname }}"
+      ansible.builtin.debug:
+        msg: 
+        - "Firewall {{ inventory_hostname }} primary dns: {{ item['results']['primary'] }}"
+        - "Firewall {{ inventory_hostname }} seconddary_dns: {{ item['results']['secondary'] }}"
