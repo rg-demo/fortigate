@@ -24,6 +24,7 @@
           sysgrp: read-write
           utmgrp: read-write
           vpngrp: read-write
+        no_log: true     
 
     - name: Create An API User if not present
       fortinet.fortios.fortios_system_api_user:
