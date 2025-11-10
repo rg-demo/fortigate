@@ -24,7 +24,9 @@
           sysgrp: read-write
           utmgrp: read-write
           vpngrp: read-write
-        enable_log: false     
+        enable_log: false
+      tags: 
+        - always
 
     - name: Create an API User for Ansible Automation if not present
       fortinet.fortios.fortios_system_api_user:
@@ -37,6 +39,8 @@
                 - name: "{{ fg_vdom }}"
             trusthost:
                 - id: '1'
+      tags: 
+        - always
 
     - name: Generate The API token
       fortinet.fortios.fortios_monitor:
@@ -45,6 +49,8 @@
         params:
             api-user: 'fortigateAPIUser'
       register: tokeninfo
+      tags: 
+        - always
 
     - name: SetFact token
       with_items:
@@ -53,6 +59,8 @@
         label: "{{ inventory_hostname }}"
       ansible.builtin.set_fact:
         __fg_token: "{{ item['results']['access_token'] }}"
+      tags: 
+        - always
 
     - name: "Collect facts from Fortigate"
       fortinet.fortios.fortios_configuration_fact:
