@@ -5,14 +5,10 @@ all:
       hosts:
         jp-fgt3:
           ansible_host: "{{ jp_fgt3_ip }}"
-          ansible_user: "{{ jp_fg_admin_user }}"
-          ansible_password: "{{ jp_fg_admin_password }}"
     europe:
       hosts:    
         eu-fgt4:
           ansible_host: "{{ eu_fgt4_ip }}"
-          ansible_user: "{{ eu_fg_admin_user }}"
-          ansible_password: "{{ eu_fg_admin_password }}"
 fortigates:
   children:
     japan:
