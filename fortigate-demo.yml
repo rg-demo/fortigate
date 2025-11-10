@@ -94,6 +94,15 @@
       tags: 
         - check_dns
 
+    - name: Debug fact
+      loop:
+        - "{{ __fg_token }}"
+      ansible.builtin.debug:
+        msg:
+          - "API token for firewall {{ inventory_hostname }}: {{ __fg_token }}"
+      tags:
+        - always
+
     - name: "Make necessary dns changes if applicable"
       fortinet.fortios.fortios_system_dns:
         access_token: "{{ __fg_token }}"
