@@ -56,7 +56,7 @@
 
     - name: "Collect facts from Fortigate"
       fortinet.fortios.fortios_configuration_fact:
-        access_token: "{{ fg_token }}"
+        access_token: "{{ __fg_token }}"
         vdom: "{{ fg_vdom }}"
         selectors:
           - selector: system_dns
@@ -87,7 +87,7 @@
 
     - name: "Make necessary dns changes if applicable"
       fortinet.fortios.fortios_system_dns:
-        access_token: "{{ fg_token }}"
+        access_token: "{{ __fg_token }}"
         vdom: "{{ fg_vdom }}"
         system_dns:
             primary: >- 
@@ -114,7 +114,7 @@
       block:
         - name: "Re-collect facts from Fortigate"
           fortinet.fortios.fortios_configuration_fact:
-            access_token: "{{ fg_token }}"
+            access_token: "{{ __fg_token }}"
             vdom: "{{ fg_vdom }}"
             selectors:
               - selector: system_dns
@@ -133,7 +133,7 @@
 
     - name: "Break DNS configuration for testing"
       fortinet.fortios.fortios_system_dns:
-        access_token: "{{ fg_token }}"
+        access_token: "{{ __fg_token }}"
         vdom: "{{ fg_vdom }}"
         system_dns:
             primary: >- 
