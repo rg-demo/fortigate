@@ -8,7 +8,7 @@
     - vault.yml
 
   tasks:
-    - name: Create Access Profile for Ansible Automation
+    - name: Create an Admin Access Profile for Ansible Automation
       fortinet.fortios.fortios_system_accprofile:
         vdom: "{{ fg_vdom }}"
         state: present
@@ -26,13 +26,13 @@
           vpngrp: read-write
         enable_log: false     
 
-    - name: Create An API User if not present
+    - name: Create an API User for Ansible Automation if not present
       fortinet.fortios.fortios_system_api_user:
         vdom: "{{ fg_vdom }}"
         state: 'present'
         system_api_user:
             name: 'fortigateAPIUser'
-            accprofile: 'ansible_automation' # This is predefined privilege profile.
+            accprofile: 'ansible_automation_accprofile'
             vdom:
                 - name: "{{ fg_vdom }}"
             trusthost:
@@ -49,6 +49,7 @@
     - name: Debug tokeninfo var
       ansible.builtin.debug:
         var: tokeninfo['meta']['results']['access_token']
+        verbosity: 2
 
     - name: SetFact token
       with_items:
@@ -64,6 +65,7 @@
       ansible.builtin.debug:
         msg:
           - "API token for firewall {{ inventory_hostname }}: {{ __fg_token }}"
+        verbosity: 2
 
     - name: "Collect facts from Fortigate"
       fortinet.fortios.fortios_configuration_fact:
