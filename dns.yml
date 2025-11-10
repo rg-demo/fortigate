@@ -4,6 +4,8 @@
   gather_facts: no
   collections:
     - fortinet.fortios
+  vars_files:
+    - vault.yml
   
   tasks:    
     - name: "Collect facts from Fortigate"
