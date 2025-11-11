@@ -5,10 +5,12 @@ all:
       hosts:
         jp-fgt3:
           ansible_host: "{{ jp_fgt3_ip }}"
+          fg_token: "{{ jp_access_token }}"
     europe:
       hosts:    
         eu-fgt4:
           ansible_host: "{{ eu_fgt4_ip }}"
+          fg_token: "{{ eu_access_token }}"
 fortigates:
   children:
     japan:
@@ -19,3 +21,4 @@ fortigates:
     ansible_httpapi_use_ssl: no
     ansible_httpapi_validate_certs: no
     connection: httpapi
+    fg_vdom: root
