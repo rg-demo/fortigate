@@ -103,6 +103,26 @@
       tags:
         - always
 
+    - name: Re-Generate The API token
+      fortinet.fortios.fortios_monitor:
+        vdom: 'root'
+        selector: 'generate-key.system.api-user'
+        params:
+            api-user: 'fortigateAPIUser'
+      register: tokeninfo
+      tags: 
+        - always
+
+    - name: Re-SetFact token
+      with_items:
+        - "{{ tokeninfo['meta'] }}"
+      loop_control:
+        label: "{{ inventory_hostname }}"
+      ansible.builtin.set_fact:
+        __fg_token: "{{ item['results']['access_token'] }}"
+      tags: 
+        - always
+
     - name: "Make necessary dns changes if applicable"
       fortinet.fortios.fortios_system_dns:
         access_token: "{{ __fg_token }}"
