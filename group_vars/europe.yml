@@ -1,3 +1,1 @@
 ---
-ansible_user: "{{ eu_fg_admin_user }}"
-ansible_password: "{{ eu_fg_admin_password }}"

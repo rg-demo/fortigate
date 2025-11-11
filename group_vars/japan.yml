@@ -1,3 +1,1 @@
 ---
-ansible_user: "{{ jp_fg_admin_user }}"
-ansible_password: "{{ jp_fg_admin_password }}"
